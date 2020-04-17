@@ -1,0 +1,7 @@
+aiohttp
+aiohttp_jwt
+gino
+gunicorn
+pandas
+pytest-aiohttp
+scrapy
