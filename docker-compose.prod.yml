@@ -10,8 +10,6 @@ services:
       PGDATA: /data/postgres
     volumes:
       - postgres:/data/postgres
-    ports:
-      - "5432:5432"
     networks:
       - app-network
     restart: unless-stopped
@@ -32,24 +30,12 @@ services:
     depends_on:
       - db
   
-  frontend:
-    container_name: frontend_container
-    build: ./frontend
-    tty: true
-    ports:
-      - "3000:3000"
-    volumes:
-      - './frontend/:/app'
-      - 'frontend:/app/node_modules'
-  
   server:
     container_name: server_container
     build: ./server
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "8080:8080"
     volumes:
       - ./server/:/app
     command: gunicorn server.app:app -b :8080 --worker-class aiohttp.worker.GunicornWebWorker --reload
@@ -61,12 +47,12 @@ services:
   
   webserver:
     container_name: webserver_container
-    image: nginx:alpine
+    build:
+      context: ./
+      dockerfile: ./frontend/Dockerfile.prod
     restart: unless-stopped
     ports:
       - "80:80"
-    volumes:
-      - ./nginx/:/etc/nginx/conf.d/
     networks:
       - app-network
     depends_on:
@@ -79,4 +65,3 @@ networks:
 volumes:
   postgres:
   pgadmin:
-  frontend:
