@@ -45,7 +45,7 @@ def infix_to_postfix(query):
                 postfix.push(head)
                 head = operator_stack.pop()
         else:
-            while operator_stack.__len__() > 0 and (precedence[operator_stack.get_stack()[-1]] >= precedence[token]):
+            while operator_stack.__len__() > 0 and (precedence[operator_stack.peek()] >= precedence[token]):
                 postfix.push(operator_stack.pop())
             operator_stack.push(token)
 
