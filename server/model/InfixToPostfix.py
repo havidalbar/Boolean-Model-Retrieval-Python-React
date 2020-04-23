@@ -1,4 +1,5 @@
 import re
+import unittest
 
 class stack:
     def __init__(self):
@@ -51,3 +52,16 @@ def infix_to_postfix(query):
     while operator_stack.__len__() > 0:
         postfix.push(operator_stack.pop())
     return postfix.get_stack()
+
+class TestInfixToPostfix(unittest.TestCase):
+
+    def setUp(self):
+        self.expected = ['gatal', 'perih', 'merah', 'or', 'not', 'and']
+        self.result = infix_to_postfix('gatal and not (perih or merah)')
+
+    def test_query(self):
+        self.assertCountEqual(self.result, self.expected, "Should be ['gatal', 'perih', 'merah', 'or', 'not', 'and']")
+
+
+if __name__ == '__main__':
+    unittest.main()
