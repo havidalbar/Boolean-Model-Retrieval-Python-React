@@ -1,6 +1,6 @@
 import re
 
-def query_to_postfix(query):
+def infix_to_postfix(query):
 	list_operator = ['(', ')', 'or', 'and', 'not']
 	priority_operator = [0, 0, 1, 2, 3]
 	operator_stack = []
