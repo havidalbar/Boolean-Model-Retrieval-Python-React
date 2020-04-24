@@ -1,10 +1,11 @@
-from util import Stack
+from retrieval.stack import Stack
 import re
+
 
 def infix_to_postfix(query):
     operator_stack = Stack()
     postfix = Stack()
-    precedence = {'(':0,')':0,'or':1,'and':2,'not':3}
+    precedence = {'(': 0, ')': 0, 'or': 1, 'and': 2, 'not': 3}
 
     list_token = re.findall(r"([a-zA-Z]+|\(|\))", query)
     for token in list_token:
@@ -24,6 +25,4 @@ def infix_to_postfix(query):
 
     while operator_stack.__len__() > 0:
         postfix.push(operator_stack.pop())
-    return postfix.get_stack()
-
-
+    return postfix.get()
