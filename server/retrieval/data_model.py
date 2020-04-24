@@ -1,9 +1,12 @@
+from retrieval.preprocessing import Preprocessing
+
+
 class DataModel:
-    def __init__(self, link: str, title: str, raw_text: str, cleaned: str):
+    def __init__(self, link: str, title: str, raw_text: str):
         self.__link: str = link
         self.__title: str = title
         self.__raw_text: str = raw_text
-        self.__cleaned: str = cleaned
+        self.__cleaned: str = Preprocessing.cleaning(raw_text)
 
     def get_link(self) -> str:
         return self.__link
