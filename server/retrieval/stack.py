@@ -20,7 +20,7 @@ class Stack:
     def peek(self):
         if not self.is_empty():
             return self.stack[-1]
-        raise IndexError 
+        raise IndexError
 
     def get(self):
         return self.stack
