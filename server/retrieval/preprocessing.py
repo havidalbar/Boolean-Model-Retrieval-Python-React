@@ -2,8 +2,9 @@ import re
 from retrieval.file_utility import read_file
 from typing import IO, Iterable, List, Set
 
+
 class Preprocessing:
-    def __init__(self, stopword = []):
+    def __init__(self, stopword=[]):
         if isinstance(stopword, str):
             self._stopword = set(read_file(stopword, splitter='\n'))
         elif isinstance(stopword, Iterable):
@@ -16,14 +17,14 @@ class Preprocessing:
         if lower:
             return input.lower()
         return input.upper()
-    
+
     @staticmethod
     def cleaning(input: str, regex_set: str = 'a-z') -> str:
         return re.sub(rf"([{regex_set}]?)([^{regex_set}]+)([{regex_set}]?)", Preprocessing._sub_resolver, input)
 
     def filtering(self, tokens: List[str]) -> List[str]:
         return [token for token in tokens if token not in self._stopword]
-    
+
     @staticmethod
     def tokenizing(input: str, splitter: str = None, regex_split: str = None) -> List[str]:
         if splitter is not None:
