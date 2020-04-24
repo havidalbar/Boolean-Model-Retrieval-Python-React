@@ -1,9 +1,9 @@
-from utils import stack
+from util import Stack
 import re
 
 def infix_to_postfix(query):
-    operator_stack = stack()
-    postfix = stack()
+    operator_stack = Stack()
+    postfix = Stack()
     precedence = {'(':0,')':0,'or':1,'and':2,'not':3}
 
     list_token = re.findall(r"([a-zA-Z]+|\(|\))", query)
