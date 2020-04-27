@@ -1,6 +1,8 @@
 import os
 import requests
 from bs4 import BeautifulSoup
+from itertools import repeat
+from multiprocessing import Pool, cpu_count
 from typing import Any, Dict, List, IO
 
 
@@ -13,13 +15,12 @@ def start_spider(write_path: str = None, debug: bool = False):
     penyakit_urls = {penyakit_element.get('href'): None
                      for penyakit_element in landing_page_soup.select('.content-item>a')
                      if penyakit_element.get('href').startswith(start_url)}
-    
-    result = []
-    for penyakit_url in penyakit_urls.keys():
-        penyakit: Dict[str, str] = scrape_penyakit(penyakit_url)
-        result.append(penyakit)
-        if debug:
-            print(penyakit)  
+
+    p: Pool = Pool(cpu_count())
+    result: List[Dict[str, str]] = p.starmap(
+        scrape_penyakit, zip(penyakit_urls.keys(), repeat(debug)))
+    p.close()
+    p.join()
 
     if write_path is not None:
         if os.path.isfile(write_path):
@@ -33,7 +34,7 @@ def start_spider(write_path: str = None, debug: bool = False):
     return result
 
 
-def scrape_penyakit(penyakit_url: str):
+def scrape_penyakit(penyakit_url: str, debug: bool):
     hdr: Dict[str, str] = {'User-Agent': 'Mozilla/5.0'}
     success: bool = False
     result: Dict[str, str] = {}
@@ -60,6 +61,8 @@ def scrape_penyakit(penyakit_url: str):
         except:
             print(f'Retrying to: {penyakit_url}')
 
+    if debug:
+        print(result)
     return result
 
 
