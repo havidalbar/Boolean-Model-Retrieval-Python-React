@@ -1,48 +1,66 @@
 import os
-import re
-import scrapy
-from typing import Dict, List, IO
+import requests
+from bs4 import BeautifulSoup
+from typing import Any, Dict, List, IO
 
 
-class SehatQSpider(scrapy.Spider):
-    name = 'SehatQ: Penyakit - Spider'
-    start_urls = ['https://www.sehatq.com/penyakit']
+def start_spider(write_path: str = None, debug: bool = False):
+    start_url: str = 'https://www.sehatq.com/penyakit'
+    hdr: Dict[str, str] = {'User-Agent': 'Mozilla/5.0'}
+    landing_page_soup: BeautifulSoup = BeautifulSoup(
+        requests.get(start_url, headers=hdr).text, 'lxml')
 
-    def __init__(self, write_path: str = None):
-        super(SehatQSpider, self).__init__()
-        self.write_path: str = write_path
-        if self.write_path is not None:
-            self.results: List[Dict[str, str]] = []
+    penyakit_urls = {penyakit_element.get('href'): None
+                     for penyakit_element in landing_page_soup.select('.content-item>a')
+                     if penyakit_element.get('href').startswith(start_url)}
+    
+    result = []
+    for penyakit_url in penyakit_urls.keys():
+        penyakit: Dict[str, str] = scrape_penyakit(penyakit_url)
+        result.append(penyakit)
+        if debug:
+            print(penyakit)  
 
-    def parse(self, response: scrapy.http.Response):
-        for url_penyakit in response.css('.content-item>a ::attr(href)').getall():
-            yield response.follow(url_penyakit, self.parse_penyakit)
+    if write_path is not None:
+        if os.path.isfile(write_path):
+            os.remove(write_path)
+        result_file_pointer: IO = open(write_path, 'w+')
+        for res in result:
+            result_file_pointer.write(
+                f"<DOC>\n<URL>{res['url']}</URL>\n<IMG>{res['img']}</IMG>\n<TITLE>{res['title']}</TITLE>\n<CONTENT>\n{res['content']}\n</CONTENT>\n</DOC>\n")
+        result_file_pointer.close()
 
-    def parse_penyakit(self, response: scrapy.http.Response):
-        contents = []
-        for content_element in response.css('div.dynamic-content.large'):
-            paragraph = ''
-            for content in content_element.css('::text').getall():
-                stripped_content = re.sub(r"\\x[a-z0-9]{2}", " ", content)
-                if len(stripped_content) > 0:
-                    paragraph += ' ' + stripped_content
-            contents.append(paragraph)
+    return result
 
-        result = {
-            "url": response.url,
-            "title": response.css('div.content-item.has-top.mb-4>h1 ::text').get().strip(),
-            "content": '\n'.join(par.strip() for par in contents).strip()
-        }
-        if self.write_path is not None:
-            self.results.append(result)
-        yield result
 
-    def close(self, reason: str):
-        if self.write_path is not None and reason == 'finished':
-            if os.path.isfile(self.write_path):
-                os.remove(self.write_path)
-            result_file_pointer: IO = open(self.write_path, 'w+')
-            for result in self.results:
-                result_file_pointer.write(
-                    f"<DOC>\n<URL>{result['url']}</URL>\n<TITLE>{result['title']}</TITLE>\n<CONTENT>\n{result['content']}\n</CONTENT>\n</DOC>\n")
-            result_file_pointer.close()
+def scrape_penyakit(penyakit_url: str):
+    hdr: Dict[str, str] = {'User-Agent': 'Mozilla/5.0'}
+    success: bool = False
+    result: Dict[str, str] = {}
+    while not success:
+        try:
+            penyakit_soup: BeautifulSoup = BeautifulSoup(
+                requests.get(penyakit_url, headers=hdr).text, 'lxml')
+
+            processing_params: Dict[str, Any] = {
+                'separator': ' ',
+                'strip': True
+            }
+            result = {
+                'url': penyakit_url,
+                'img': penyakit_soup.select_one('figure.content-item.mb-3>div>div>img').get('src'),
+                'title': penyakit_soup.select_one('div.content-item.has-top.mb-4>h1').get_text(**processing_params),
+                'content': '\n'.join(f'{content_title.get_text(**processing_params)}\n{content_element.get_text(**processing_params)}'
+                                     for content_title, content_element in zip(penyakit_soup.select('h2.d-inline'),
+                                                                               penyakit_soup.select('div.dynamic-content.large')))
+            }
+            success = True
+        except KeyboardInterrupt:
+            exit()
+        except:
+            print(f'Retrying to: {penyakit_url}')
+
+    return result
+
+
+start_spider(debug=True, write_path='retrieval/resources/data_scrape.txt')
