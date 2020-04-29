@@ -64,6 +64,3 @@ def scrape_penyakit(penyakit_url: str, debug: bool):
     if debug:
         print(result)
     return result
-
-
-start_spider(debug=True, write_path='retrieval/resources/data_scrape.txt')
