@@ -36,13 +36,7 @@ class BooleanModel:
         for doc_index, doc in enumerate(self.docs):
             doc_tokens: List[str] = Preprocessing.tokenizing(doc['CLEANED'])
 
-            if doc_index == 1141:
-                print(doc['CLEANED'])
-                print(doc_tokens)
-
             for token in set(doc_tokens):
-                if doc_index == 1141:
-                    print(token)
                 if self.index.get(token, None) is None:
                     self.index[token] = set()
                 self.index[token].add(doc_index)
@@ -50,11 +44,5 @@ class BooleanModel:
     def get_index(self, token: str):
         return self.index.get(token, set())
 
-    def and_operator(self, token1: str, token2: str):
-        return self.get_index(token1).intersection(self.get_index(token2))
-
-    def or_operator(self, token1: str, token2: str):
-        return self.get_index(token1).union(self.get_index(token2))
-
-    def not_operator(self, token: str):
-        return self.__universal_set.difference(self.get_index(token))
+    def not_operator(self, token: Set[int]):
+        return self.__universal_set.difference(token)

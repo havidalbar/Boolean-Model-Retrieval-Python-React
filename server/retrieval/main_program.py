@@ -2,6 +2,7 @@ import os
 import sys
 from retrieval.boolean_model import BooleanModel
 from retrieval.file_utility import read_file
+from retrieval.query_processing import infix_to_postfix, postfix_evaluator
 from retrieval.sehatq_spider import start_spider
 
 
@@ -18,4 +19,5 @@ if __name__ == '__main__':
 
     data_content: str = read_file(data_filename)
     boolean_model: BooleanModel = BooleanModel(data_content)
-    print(boolean_model.get_index('aini'))
+    query = infix_to_postfix('trikiasis or trikomoniasis')
+    print(postfix_evaluator(query, boolean_model))
