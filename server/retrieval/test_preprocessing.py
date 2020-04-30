@@ -8,7 +8,7 @@ class TestPreprocessing(unittest.TestCase):
         preprocessing: Preprocessing = Preprocessing()
         self.assertEqual(preprocessing._stopword, set())
 
-        stopword_path: str = 'resources/id.stopwords.02.01.2016.txt'
+        stopword_path: str = 'retrieval/resources/id.stopwords.02.01.2016.txt'
         preprocessing: Preprocessing = Preprocessing(stopword_path)
         stopword_file: IO = open(stopword_path)
         self.assertEqual(preprocessing._stopword, set(
@@ -31,9 +31,10 @@ class TestPreprocessing(unittest.TestCase):
             "besar!123", lower=False), "BESAR!123")
 
     def test_cleaning(self):
-        my_string: str = '"terima kasih", pungkasnya.sekian dari saya.'
-        self.assertEqual(Preprocessing.cleaning(my_string),
+        self.assertEqual(Preprocessing.cleaning('"terima kasih", pungkasnya.sekian dari saya.'),
                          'terima kasih pungkasnya sekian dari saya')
+        self.assertEqual(Preprocessing.cleaning('kekurangan vitamin a. penyakit ini...'),
+                         'kekurangan vitamin a penyakit ini')
 
     def test_filtering(self):
         my_custom_stopword: List[str] = ['dan', 'atau']

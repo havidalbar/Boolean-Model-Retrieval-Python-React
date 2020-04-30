@@ -1,7 +1,9 @@
 aiohttp
 aiohttp_jwt
+beautifulsoup4
 gino
 gunicorn
+lxml
 pandas
 pytest-aiohttp
-scrapy
+requests

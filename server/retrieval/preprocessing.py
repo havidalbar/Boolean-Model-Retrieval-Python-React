@@ -19,8 +19,9 @@ class Preprocessing:
         return input.upper()
 
     @staticmethod
-    def cleaning(input: str, regex_set: str = 'a-z') -> str:
-        return re.sub(rf"([{regex_set}]?)([^{regex_set}]+)([{regex_set}]?)", Preprocessing._sub_resolver, input)
+    def cleaning(input: str, regex_set: str = 'a-z\\s') -> str:
+        cleaned: str = re.sub(rf"([{regex_set}]?)([^{regex_set}]+)([{regex_set}]?)", Preprocessing._sub_resolver, input)
+        return re.sub(r"\s+", " ", cleaned)
 
     def filtering(self, tokens: List[str]) -> List[str]:
         return [token for token in tokens if token not in self._stopword]
