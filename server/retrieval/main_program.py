@@ -19,5 +19,11 @@ if __name__ == '__main__':
 
     data_content: str = read_file(data_filename)
     boolean_model: BooleanModel = BooleanModel(data_content)
-    query = infix_to_postfix('trikiasis or trikomoniasis')
-    print(postfix_evaluator(query, boolean_model))
+    # query = infix_to_postfix('trikiasis or trikomoniasis')
+    query = infix_to_postfix('gatal and (merah or perih)')
+    # print(postfix_evaluator(query, boolean_model))
+    evaluator = postfix_evaluator(query, boolean_model)
+    print(evaluator)
+    list_doc_model = boolean_model.load_pickle_to_list_data_model()
+    for i in evaluator:
+        print(list_doc_model[i].get_link())
