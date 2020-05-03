@@ -44,4 +44,7 @@ def postfix_evaluator(query: List[str], boolean_model: BooleanModel) -> Set[int]
         else:
             temp_result.push(boolean_model.get_indexes(token_in_query))
 
+    if len(temp_result) > 1:
+        raise ValueError
+
     return temp_result.pop()

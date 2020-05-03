@@ -1,37 +1,6 @@
 version: '3.7'
 
-services:
-  db:
-    container_name: db_container
-    image: postgres
-    environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      PGDATA: /data/postgres
-    volumes:
-      - postgres:/data/postgres
-    ports:
-      - "5432:5432"
-    networks:
-      - app-network
-    restart: unless-stopped
-  
-  dbadmin:
-    container_name: dbadmin_container
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${DBADMIN_DEFAULT_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${DBADMIN_DEFAULT_PASSWORD}
-    volumes:
-      - pgadmin:/root/.pgadmin
-    ports:
-      - "${DBADMIN_PORT}:80"
-    networks:
-      - app-network
-    restart: unless-stopped
-    depends_on:
-      - db
-  
+services:  
   frontend:
     container_name: frontend_container
     build: ./frontend
@@ -45,19 +14,14 @@ services:
   server:
     container_name: server_container
     build: ./server
-    environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "8080:8080"
     volumes:
       - ./server/:/app
-    command: gunicorn server.app:app -b :8080 --worker-class aiohttp.worker.GunicornWebWorker --reload
+    command: gunicorn server.main:app -b :8080 --worker-class aiohttp.worker.GunicornWebWorker --reload
     restart: unless-stopped
     networks:
       - app-network
-    depends_on:
-      - db
   
   webserver:
     container_name: webserver_container
@@ -77,6 +41,4 @@ networks:
     driver: bridge
 
 volumes:
-  postgres:
-  pgadmin:
   frontend:
