@@ -1,9 +1,7 @@
-import os
-import pickle
 from aiohttp import web
+from .utility import load_model_pickle
 from retrieval.boolean_model import BooleanModel
 from retrieval.data_model import DataModel
-from retrieval.file_utility import read_file
 from retrieval.query_processing import infix_to_postfix, postfix_evaluator
 from typing import Dict, List, Set
 
@@ -13,18 +11,7 @@ def index(request: web.Request):
 
 
 def search(request: web.Request):
-    data_filename: str = 'retrieval/resources/data_scrape.txt'
-    pickle_filename: str = 'boolean_model.pickle'
-
-    boolean_model: BooleanModel = None
-    if not os.path.isfile(pickle_filename):
-        data_content: str = read_file(data_filename)
-        boolean_model = BooleanModel(data_content)
-    else:
-        boolean_model_file = open(pickle_filename, 'rb')
-        boolean_model = pickle.load(boolean_model_file)
-        boolean_model_file.close()
-
+    boolean_model: BooleanModel = load_model_pickle()
     try:
         query: str = request.query.get('q', '').strip()
         postfix_query: List[int] = infix_to_postfix(query)
@@ -36,3 +23,17 @@ def search(request: web.Request):
         return web.json_response({"message": "Success!", "data": result_docs})
     except:
         return web.json_response({"message": "Invalid Query!"}, status=422)
+
+
+def get_detail(request: web.Request):
+    boolean_model: BooleanModel = load_model_pickle()
+    result: DataModel = boolean_model.get_document_by_slug(
+        request.match_info.get('slug', ''))
+
+    if result is None:
+        return web.json_response({"message": "Disease Not Found!"}, status=404)
+
+    return web.json_response({
+        "message": "Success!",
+        "data": result.asdict(output_keys=['url', 'title', 'img', 'content'])
+    })

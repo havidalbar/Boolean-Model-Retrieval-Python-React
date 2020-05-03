@@ -50,3 +50,10 @@ class BooleanModel:
 
     def get_documents(self, indexes: Iterable, sort_result: bool = True) -> List[DataModel]:
         return [self.__docs[index] for index in (sorted(indexes) if sort_result else indexes)]
+
+    def get_document_by_slug(self, slug: str) -> DataModel:
+        for doc in self.__docs:
+            if doc.get_slug() == slug:
+                return doc
+
+        return None
