@@ -1,6 +1,6 @@
 import re
-from retrieval.boolean_model import BooleanModel
-from retrieval.stack import Stack
+from .boolean_model import BooleanModel
+from .stack import Stack
 from typing import List, Set, Tuple, Dict
 
 

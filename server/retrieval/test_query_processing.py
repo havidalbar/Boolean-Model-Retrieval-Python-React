@@ -1,5 +1,5 @@
-from retrieval.query_processing import infix_to_postfix
 import unittest
+from .query_processing import infix_to_postfix
 
 
 class TestQueryProcessing(unittest.TestCase):

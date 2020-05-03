@@ -1,11 +1,11 @@
 import os
 import pickle
 import sys
-from retrieval.boolean_model import BooleanModel
-from retrieval.data_model import DataModel
-from retrieval.file_utility import read_file
-from retrieval.query_processing import infix_to_postfix, postfix_evaluator
-from retrieval.sehatq_spider import start_spider
+from .boolean_model import BooleanModel
+from .data_model import DataModel
+from .file_utility import read_file
+from .query_processing import infix_to_postfix, postfix_evaluator
+from .sehatq_spider import start_spider
 from typing import List, Set
 
 

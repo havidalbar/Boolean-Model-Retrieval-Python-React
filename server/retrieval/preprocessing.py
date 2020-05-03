@@ -1,5 +1,5 @@
 import re
-from retrieval.file_utility import read_file
+from .file_utility import read_file
 from typing import IO, Iterable, List, Set
 
 

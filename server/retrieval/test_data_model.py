@@ -1,5 +1,5 @@
-from retrieval.data_model import DataModel
 import unittest
+from .data_model import DataModel
 
 
 class TestDataModel(unittest.TestCase):

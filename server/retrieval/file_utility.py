@@ -1,5 +1,5 @@
-from typing import IO
 import os
+from typing import IO
 
 
 def read_file(file_path: str, splitter: str = '', encoding: str = 'utf-8'):

@@ -1,9 +1,9 @@
 import numpy as np
 import pickle
 import re
+from .data_model import DataModel
+from .preprocessing import Preprocessing
 from typing import Dict, List, Iterable, Set
-from retrieval.data_model import DataModel
-from retrieval.preprocessing import Preprocessing
 
 
 class BooleanModel:

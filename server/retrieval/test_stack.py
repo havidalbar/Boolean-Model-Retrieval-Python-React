@@ -1,5 +1,5 @@
-from retrieval.stack import Stack
 import unittest
+from .stack import Stack
 
 
 class TestStack(unittest.TestCase):

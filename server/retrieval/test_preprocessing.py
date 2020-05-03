@@ -1,5 +1,5 @@
 import unittest
-from retrieval.preprocessing import Preprocessing
+from .preprocessing import Preprocessing
 from typing import List, IO
 
 
