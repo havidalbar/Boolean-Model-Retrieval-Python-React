@@ -5,8 +5,7 @@ services:
     container_name: server_container
     build: ./server
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      - IS_DEV=0
     volumes:
       - ./server/:/app
     command: gunicorn server.main:app -b :8080 --worker-class aiohttp.worker.GunicornWebWorker --reload
