@@ -4,4 +4,5 @@ gunicorn
 lxml
 pandas
 pytest-aiohttp
+python-slugify
 requests
