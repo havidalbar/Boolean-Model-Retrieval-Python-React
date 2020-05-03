@@ -42,6 +42,6 @@ def postfix_evaluator(query: List[str], boolean_model: BooleanModel) -> Set[int]
             else:
                 temp_result.push(temp_result.pop().union(temp_result.pop()))
         else:
-            temp_result.push(boolean_model.get_index(token_in_query))
+            temp_result.push(boolean_model.get_indexes(token_in_query))
 
     return temp_result.pop()
