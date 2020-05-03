@@ -30,6 +30,14 @@ class DataModel:
     def get_cleaned(self) -> str:
         return self.__cleaned
 
+    def get_summary(self) -> str:
+        split_index: int = 300
+        for char_index in range(split_index, 0, -1):
+            if self.__cleaned[char_index] == ' ':
+                split_index = char_index
+                break
+        return self.__cleaned[0:split_index] + '…'
+
     def get_tokens(self) -> List[str]:
         return self.__tokens
 
@@ -41,6 +49,7 @@ class DataModel:
             'img': self.__img,
             'content': self.__content,
             'cleaned': self.__cleaned,
+            'summary': self.get_summary(),
             'tokens': self.__tokens
         }
 
