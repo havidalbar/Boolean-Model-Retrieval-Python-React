@@ -112,7 +112,7 @@ export default function Landing(props) {
                                     renderItem={item => (
                                         <List.Item>
                                             <List.Item.Meta
-                                                avatar={<Avatar src={item.img} />}
+                                                avatar={<Avatar src={item.img} size={80} />}
                                                 title={<a onClick={() => showDetail(item.slug)}>{item.title}</a>}
                                                 description={<p style={{ textAlign: 'justify' }}>{item.summary}</p>}
                                             />
@@ -120,7 +120,7 @@ export default function Landing(props) {
                                     )}
                                 />
                                 <Pagination {...data.meta} defaultCurrent={page} showSizeChanger={false} onChange={(page, pageSize) => {
-                                    setPage(page + 1);
+                                    setPage(page);
                                     document.body.scrollTop = 0; // For Safari
                                     document.documentElement.scrollTop = 0;
                                     props.history.push(`/${query}/${page}`)
