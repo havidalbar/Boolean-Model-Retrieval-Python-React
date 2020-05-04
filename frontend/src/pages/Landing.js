@@ -2,43 +2,42 @@ import React, { useState, useEffect, Fragment } from 'react';
 import { Layout, Input, Col, Row, Pagination, List, Avatar, Modal, Button } from 'antd';
 import { motion } from "framer-motion";
 import Axios from 'axios';
-import Card from '../Component/Card';
 
 
-function getWindowDimensions() {
-    const { innerHeight: height } = window;
-    return height
-}
+const { location: { hostname } } = window;
 
-async function showDetail(slug){
-    let { data } = await Axios.get(`http://localhost/api/detail/${slug}`);
+const getWindowDimensions = () => window.innerHeight;
+
+async function showDetail(slug) {
+    let { data } = await Axios.get(`http://${hostname}/api/detail/${slug}`);
     Modal.info({
-        icon:([]),
-        style:{top:20},
-        width:'70vw',
+        icon: ([]),
+        style: { top: 20 },
+        width: '70vw',
         content: (
-          <div >
-          <div style={{textAlign:'center'}}>
-          <h3>{data.data.title}</h3>
-          <img src={data.data.img} style={{width:'50vh',height:'30vh'}}/>
-          </div>
-            <p>{data.data.content}</p>
-          </div>
+            <div >
+                <div style={{ textAlign: 'center' }}>
+                    <h3>{data.data.title}</h3>
+                    <img src={data.data.img} style={{ width: '50vh', height: '30vh' }} />
+                </div>
+                <br />
+                <p style={{ textAlign: 'justify' }}
+                    dangerouslySetInnerHTML={{ __html: data.data.content.replace(/\n+/g, '<br />') }} />
+            </div>
         ),
-        onOk() {},
-      });
-    }
+    });
+}
 
 export default function Landing(props) {
     const [page, setPage] = useState(props.match.params.page);
     const { Search } = Input;
-    const [height, setHeight] = useState(getWindowDimensions())
+    const [height, setHeight] = useState(getWindowDimensions());
     const [xValue, SetXValue] = useState(height * 50 / 100);
     const [data, setData] = useState(null);
     const [query, setQuery] = useState(props.match.params.query);
     const [searchValue, setSearchValue] = useState('');
     async function getQuery(value, page) {
-        let { data } = await Axios.get(`http://localhost/api/search?q=${value}&page=${page}&limit=8`);
+        let { data } = await Axios.get(`http://${hostname}/api/search?q=${value}&page=${page}`);
         if (data.data.length != 0) {
             setData(data);
         }
@@ -66,7 +65,6 @@ export default function Landing(props) {
         }
     }, [data]);
 
-
     return (
         <div>
             <motion.div
@@ -78,10 +76,10 @@ export default function Landing(props) {
                 transition={{ type: 'spring', stiffness: 50 }}
             >
                 <Row>
-                    <Col xs={2} sm={4} md={6} lg={8} ></Col>
-                    <Col xs={20} sm={16} md={12} lg={8} >
+                    <Col xs={2} sm={4} md={6} lg={8} />
+                    <Col xs={20} sm={16} md={12} lg={8}>
                         <Search
-                            placeholder="Cari gejala disini"
+                            placeholder="Cari gejala di sini..."
                             enterButton="Search"
                             size="large"
                             value={searchValue}
@@ -95,14 +93,14 @@ export default function Landing(props) {
                             }}
                             autoFocus
                         /></Col>
-                    <Col xs={2} sm={4} md={6} lg={8} ></Col>
+                    <Col xs={2} sm={4} md={6} lg={8} />
                 </Row>
             </motion.div>
             {data ?
                 <div style={{ display: 'flex', marginTop: '2vw' }}>
                     <Row>
                         <Col xs={2} sm={4} md={6} lg={4} ></Col>
-                        <Col xs={20} sm={16} md={12} lg={16} >
+                        <Col xs={20} sm={16} md={12} lg={16}>
                             <div style={{
                                 display: 'flex',
                                 alignItems: 'center',
@@ -116,7 +114,7 @@ export default function Landing(props) {
                                             <List.Item.Meta
                                                 avatar={<Avatar src={item.img} />}
                                                 title={<a onClick={() => showDetail(item.slug)}>{item.title}</a>}
-                                                description={item.summary}
+                                                description={<p style={{ textAlign: 'justify' }}>{item.summary}</p>}
                                             />
                                         </List.Item>
                                     )}
