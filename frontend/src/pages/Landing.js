@@ -32,8 +32,8 @@ export default function Landing(props) {
     const [page, setPage] = useState(props.match.params.page);
     const { Search } = Input;
     const [height, setHeight] = useState(getWindowDimensions());
-    const [xValue, SetXValue] = useState(height * 50 / 100);
-    const [data, setData] = useState(null);
+    const [xValue, setXValue] = useState(height * 50 / 100);
+    const [data, setData] = useState({ data: [] });
     const [query, setQuery] = useState(props.match.params.query);
     const [searchValue, setSearchValue] = useState('');
     async function getQuery(value, page) {
@@ -58,8 +58,8 @@ export default function Landing(props) {
     }, [query, page])
 
     useEffect(() => {
-        if (data) {
-            SetXValue(height * 1.5 / 100);
+        if (data.data.length) {
+            setXValue(height * 1.5 / 100);
         }
     }, [data]);
 
@@ -86,7 +86,6 @@ export default function Landing(props) {
                             }}
                             onSearch={value => {
                                 setQuery(value);
-                                SetXValue(height * 1.5 / 100);
                                 props.history.push(`/${value}/${page}`)
                             }}
                             autoFocus
@@ -94,7 +93,7 @@ export default function Landing(props) {
                     <Col xs={2} sm={4} md={6} lg={8} />
                 </Row>
             </motion.div>
-            {data ?
+            {(data.data.length && query) ?
                 <div style={{ display: 'flex', marginTop: '2vw' }}>
                     <Row style={{ flex: 1 }}>
                         <Col xs={2} sm={4} md={6} lg={4} ></Col>
