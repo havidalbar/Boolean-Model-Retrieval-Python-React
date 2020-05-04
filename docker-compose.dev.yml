@@ -9,6 +9,7 @@ services:
       - "3000:3000"
     volumes:
       - './frontend/:/app'
+      - 'frontend_node_modules:/app/node_modules'
   
   server:
     container_name: server_container
@@ -40,3 +41,6 @@ services:
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  frontend_node_modules:
