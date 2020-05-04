@@ -38,9 +38,7 @@ export default function Landing(props) {
     const [searchValue, setSearchValue] = useState('');
     async function getQuery(value, page) {
         let { data } = await Axios.get(`http://${hostname}/api/search?q=${value}&page=${page}`);
-        if (data.data.length != 0) {
-            setData(data);
-        }
+        setData(data);
     }
 
     useEffect(() => {
@@ -98,7 +96,7 @@ export default function Landing(props) {
             </motion.div>
             {data ?
                 <div style={{ display: 'flex', marginTop: '2vw' }}>
-                    <Row>
+                    <Row style={{ flex: 1 }}>
                         <Col xs={2} sm={4} md={6} lg={4} ></Col>
                         <Col xs={20} sm={16} md={12} lg={16}>
                             <div style={{
@@ -118,6 +116,7 @@ export default function Landing(props) {
                                             />
                                         </List.Item>
                                     )}
+
                                 />
                                 <Pagination {...data.meta} defaultCurrent={page} showSizeChanger={false} onChange={(page, pageSize) => {
                                     setPage(page);
