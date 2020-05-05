@@ -135,7 +135,7 @@ export default function Landing(props) {
                                 alignItems: 'center',
                                 flexDirection: 'column'
                             }}>
-                                <h4 style={{ width: '100%' }}>Didapat {data.meta.total} hasil</h4>
+                                <h4 style={{ width: '100%' }}>Didapat {data.meta.total} hasil - {data.execution_time.toFixed(3)} detik</h4>
                                 <List
                                     itemLayout="horizontal"
                                     dataSource={data.data}
