@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment } from 'react';
-import { Tag, Input, Col, Row, Pagination, List, Avatar, Modal } from 'antd';
+import { Tag, Input, Col, Row, Pagination, List, Avatar, Modal, Layout } from 'antd';
 import { motion } from "framer-motion";
 import Axios from 'axios';
 import { CloseOutlined, CheckOutlined, CloseCircleOutlined } from '@ant-design/icons';
@@ -40,15 +40,29 @@ export default function Landing(props) {
     const [searchValue, setSearchValue] = useState('');
     const [irrelevantList, setIrrelevantList] = useState([]);
     const [prevQuery, setPrevQuery] = useState('');
-    
+
     async function getQuery(value, page) {
-        if(value !== prevQuery){
+        if (value !== prevQuery) {
             setIrrelevantList([]);
         }
         let { data } = await Axios.get(`http://${hostname}/api/search?q=${value}&page=${page}`);
         setData(data);
         setPrevQuery(value);
     }
+
+    const getScores = (dataCount, irrelevantCount) => {
+        const relevant = (dataCount - irrelevantCount);
+        const precision = relevant / dataCount;
+        const recall = relevant / relevant;
+
+        return [
+            { 'title': 'Relevan', 'value': relevant },
+            { 'title': 'Tidak Relevan', 'value': irrelevantCount },
+            { 'title': 'Precision', 'value': precision },
+            { 'title': 'Recall', 'value': recall },
+            { 'title': 'F1 Score', 'value': (2 * precision * recall) / (precision + recall) },
+        ];
+    };
 
     useEffect(() => {
         function handleResize() {
@@ -81,7 +95,7 @@ export default function Landing(props) {
     };
 
     return (
-        <div>
+        <div style={{ padding: 16 }}>
             <motion.div
                 style={{ flex: 1, width: '100%' }}
                 animate={{
@@ -106,7 +120,8 @@ export default function Landing(props) {
                                 props.history.push(`/${value}/${page}`)
                             }}
                             autoFocus
-                        /></Col>
+                        />
+                    </Col>
                     <Col xs={2} sm={4} md={6} lg={8} />
                 </Row>
             </motion.div>
@@ -120,10 +135,7 @@ export default function Landing(props) {
                                 alignItems: 'center',
                                 flexDirection: 'column'
                             }}>
-                            <div style={{display:'flex'}}>
-                            <h4>Didapat {data.meta.total} hasil</h4> 
-                            {irrelevantList.length > 0? <h4>&nbsp;dengan {irrelevantList.length} tidak relevan</h4>:<Fragment/>}
-                            </div>
+                                <h4 style={{ width: '100%' }}>Didapat {data.meta.total} hasil</h4>
                                 <List
                                     itemLayout="horizontal"
                                     dataSource={data.data}
@@ -138,14 +150,14 @@ export default function Landing(props) {
                                                     description={<Row gutter={16}>
                                                         <Col sm={24} md={18}><p style={{ textAlign: 'justify' }}>{item.summary}</p></Col>
                                                         <Col sm={24} md={6}>
-                                                        <div style={{textAlign:'center'}}>
-                                                            {isIrrelevant && (<Tag icon={<CloseCircleOutlined />} color="error">
-                                                                Tidak Relevan
-                                                            </Tag>)}
-                                                            <a onClick={() => toggleRelevant(slug)}>
-                                                                <h5>Tandai {isIrrelevant ? 'Sebagai' : 'Tidak'} Relevan</h5>
-                                                                {isIrrelevant ? <CheckOutlined /> :<CloseOutlined/>}
-                                                            </a>
+                                                            <div style={{ textAlign: 'center' }}>
+                                                                {isIrrelevant && (<Tag icon={<CloseCircleOutlined />} color="error">
+                                                                    Tidak Relevan
+                                                                </Tag>)}
+                                                                <a onClick={() => toggleRelevant(slug)}>
+                                                                    <h5>Tandai {isIrrelevant ? 'Sebagai' : 'Tidak'} Relevan</h5>
+                                                                    {isIrrelevant ? <CheckOutlined /> : <CloseOutlined />}
+                                                                </a>
                                                             </div>
                                                         </Col>
                                                     </Row>}
@@ -153,8 +165,15 @@ export default function Landing(props) {
                                             </List.Item>
                                         )
                                     }}
-
                                 />
+                                <Row style={{ display: 'flex', width: '100%' }}>
+                                    {getScores(data.meta.total, irrelevantList.length).map(score => (
+                                        <Col flex={1} style={{ textAlign: 'center' }}>
+                                            <h4>{score.title}</h4>
+                                            <h4>{score.value}</h4>
+                                        </Col>
+                                    ))}
+                                </Row>
                                 <Pagination {...data.meta} defaultCurrent={page} showSizeChanger={false} onChange={(page) => {
                                     setPage(page);
                                     document.body.scrollTop = 0;
@@ -162,7 +181,6 @@ export default function Landing(props) {
                                     props.history.push(`/${query}/${page}`)
                                 }} />
                             </div>
-
                         </Col>
                         <Col xs={2} sm={4} md={6} lg={4} ></Col>
                     </Row>
