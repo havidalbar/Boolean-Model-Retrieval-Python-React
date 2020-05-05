@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment } from 'react';
-import { Tag, Input, Col, Row, Pagination, List, Avatar, Modal, Layout } from 'antd';
+import { Tag, Input, Col, Row, Pagination, List, Avatar, Modal, notification } from 'antd';
 import { motion } from "framer-motion";
 import Axios from 'axios';
 import { CloseOutlined, CheckOutlined, CloseCircleOutlined } from '@ant-design/icons';
@@ -19,7 +19,7 @@ async function showDetail(slug) {
             <div >
                 <div style={{ textAlign: 'center' }}>
                     <h3>{data.data.title}</h3>
-                    <img src={data.data.img} style={{ width: '50vh', height: '30vh' }} />
+                    <img src={data.data.img} style={{ width: '50vw', height: '30vh' }} />
                 </div>
                 <br />
                 <p style={{ textAlign: 'justify' }}
@@ -42,12 +42,23 @@ export default function Landing(props) {
     const [prevQuery, setPrevQuery] = useState('');
 
     async function getQuery(value, page) {
-        if (value !== prevQuery) {
-            setIrrelevantList([]);
+        if (value) {
+            try {
+                let { data } = await Axios.get(`http://${hostname}/api/search?q=${value}&page=${page}`);
+                setData(data);
+                setPrevQuery(value);
+            }
+            catch (e) {
+                notification.error({
+                    message: 'Query Error',
+                    description:
+                        'Kesalahan Penulisan Query',
+                    duration: 3,
+                });
+            }
         }
-        let { data } = await Axios.get(`http://${hostname}/api/search?q=${value}&page=${page}`);
-        setData(data);
-        setPrevQuery(value);
+
+
     }
 
     const getScores = (dataCount, irrelevantCount) => {
@@ -117,7 +128,17 @@ export default function Landing(props) {
                             }}
                             onSearch={value => {
                                 setQuery(value);
-                                props.history.push(`/${value}/${page}`)
+                                if (value) {
+                                    if (value !== prevQuery) {
+                                        setIrrelevantList([]);
+                                        props.history.push(`/${value}/${1}`)
+                                    }
+                                    props.history.push(`/${value}/${page}`)
+                                }
+                                else {
+                                    props.history.push('/');
+                                    setXValue(height * 50 / 100);
+                                }
                             }}
                             autoFocus
                         />
