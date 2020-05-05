@@ -1,7 +1,8 @@
 import React, { useState, useEffect, Fragment } from 'react';
-import { Layout, Input, Col, Row, Pagination, List, Avatar, Modal, Button } from 'antd';
+import { Tag, Input, Col, Row, Pagination, List, Avatar, Modal } from 'antd';
 import { motion } from "framer-motion";
 import Axios from 'axios';
+import { CloseOutlined, CheckOutlined, CloseCircleOutlined } from '@ant-design/icons';
 
 
 const { location: { hostname } } = window;
@@ -26,6 +27,7 @@ async function showDetail(slug) {
             </div>
         ),
     });
+    setTimeout(() => document.getElementsByClassName('ant-modal-wrap')[0].scrollTo(0, 0), 100);
 }
 
 export default function Landing(props) {
@@ -36,9 +38,16 @@ export default function Landing(props) {
     const [data, setData] = useState({ data: [] });
     const [query, setQuery] = useState(props.match.params.query);
     const [searchValue, setSearchValue] = useState('');
+    const [irrelevantList, setIrrelevantList] = useState([]);
+    const [prevQuery, setPrevQuery] = useState('');
+    
     async function getQuery(value, page) {
+        if(value !== prevQuery){
+            setIrrelevantList([]);
+        }
         let { data } = await Axios.get(`http://${hostname}/api/search?q=${value}&page=${page}`);
         setData(data);
+        setPrevQuery(value);
     }
 
     useEffect(() => {
@@ -62,6 +71,14 @@ export default function Landing(props) {
             setXValue(height * 1.5 / 100);
         }
     }, [data]);
+
+    const toggleRelevant = (slug) => {
+        if (irrelevantList.indexOf(slug) === -1) {
+            setIrrelevantList([...irrelevantList, slug]);
+        } else {
+            setIrrelevantList(irrelevantList.filter(item => item !== slug));
+        }
+    };
 
     return (
         <div>
@@ -103,23 +120,44 @@ export default function Landing(props) {
                                 alignItems: 'center',
                                 flexDirection: 'column'
                             }}>
+                            <div style={{display:'flex'}}>
+                            <h4>Didapat {data.meta.total} hasil</h4> 
+                            {irrelevantList.length > 0? <h4>&nbsp;dengan {irrelevantList.length} tidak relevan</h4>:<Fragment/>}
+                            </div>
                                 <List
                                     itemLayout="horizontal"
                                     dataSource={data.data}
-                                    renderItem={item => (
-                                        <List.Item>
-                                            <List.Item.Meta
-                                                avatar={<Avatar src={item.img} size={80} />}
-                                                title={<a onClick={() => showDetail(item.slug)}>{item.title}</a>}
-                                                description={<p style={{ textAlign: 'justify' }}>{item.summary}</p>}
-                                            />
-                                        </List.Item>
-                                    )}
+                                    renderItem={(item, index) => {
+                                        const { slug } = item;
+                                        const isIrrelevant = irrelevantList.indexOf(slug) !== -1;
+                                        return (
+                                            <List.Item key={index}>
+                                                <List.Item.Meta
+                                                    avatar={<Avatar src={item.img} size={80} />}
+                                                    title={<a onClick={() => showDetail(item.slug)}>{item.title}</a>}
+                                                    description={<Row gutter={16}>
+                                                        <Col sm={24} md={18}><p style={{ textAlign: 'justify' }}>{item.summary}</p></Col>
+                                                        <Col sm={24} md={6}>
+                                                        <div style={{textAlign:'center'}}>
+                                                            {isIrrelevant && (<Tag icon={<CloseCircleOutlined />} color="error">
+                                                                Tidak Relevan
+                                                            </Tag>)}
+                                                            <a onClick={() => toggleRelevant(slug)}>
+                                                                <h5>Tandai {isIrrelevant ? 'Sebagai' : 'Tidak'} Relevan</h5>
+                                                                {isIrrelevant ? <CheckOutlined /> :<CloseOutlined/>}
+                                                            </a>
+                                                            </div>
+                                                        </Col>
+                                                    </Row>}
+                                                />
+                                            </List.Item>
+                                        )
+                                    }}
 
                                 />
-                                <Pagination {...data.meta} defaultCurrent={page} showSizeChanger={false} onChange={(page, pageSize) => {
+                                <Pagination {...data.meta} defaultCurrent={page} showSizeChanger={false} onChange={(page) => {
                                     setPage(page);
-                                    document.body.scrollTop = 0; // For Safari
+                                    document.body.scrollTop = 0;
                                     document.documentElement.scrollTop = 0;
                                     props.history.push(`/${query}/${page}`)
                                 }} />
