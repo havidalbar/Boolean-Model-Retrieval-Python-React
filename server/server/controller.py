@@ -1,3 +1,5 @@
+import json
+import time
 from aiohttp import web
 from .utility import load_model_pickle
 from retrieval.boolean_model import BooleanModel
@@ -6,10 +8,26 @@ from retrieval.query_processing import infix_to_postfix, postfix_evaluator
 from typing import Dict, List, Set
 
 
+def json_inject_execution_time(func):
+    def inner_wrapper(*args, **kwargs):
+        start_time = time.time()
+        result: web.Response = func(*args, **kwargs)
+        execution_time = time.time() - start_time
+        payload: Dict = json.loads(result.text)
+        payload['execution_time'] = execution_time
+        result.text = json.dumps(payload)
+
+        return result
+
+    return inner_wrapper
+
+
+@json_inject_execution_time
 def index(request: web.Request):
     return web.json_response({"message": "Welcome to Boolean Retrieval Model API!"})
 
 
+@json_inject_execution_time
 def search(request: web.Request):
     boolean_model: BooleanModel = load_model_pickle()
     try:
@@ -22,7 +40,7 @@ def search(request: web.Request):
 
         result_docs: List[Dict[str, str]] = [doc.asdict(output_keys=['slug', 'title', 'img', 'summary'])
                                              for doc in boolean_model.get_documents(evaluator_result)]
-        
+
         total_result: int = len(result_docs)
         offset: int = (current_page - 1) * page_size_limit
         result_docs = result_docs[offset:current_page * page_size_limit]
@@ -41,6 +59,7 @@ def search(request: web.Request):
         return web.json_response({"message": "Invalid Query!"}, status=422)
 
 
+@json_inject_execution_time
 def get_detail(request: web.Request):
     boolean_model: BooleanModel = load_model_pickle()
     result: DataModel = boolean_model.get_document_by_slug(
