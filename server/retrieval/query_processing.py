@@ -9,7 +9,7 @@ def infix_to_postfix(query: str) -> List[str]:
     postfix: Stack = Stack()
     precedence: Dict[str, int] = {'(': 0, ')': 0, 'or': 1, 'and': 2, 'not': 3}
 
-    list_token: List[str] = re.findall(r"([a-zA-Z]+|\(|\))", query)
+    list_token: List[str] = re.findall(r"([a-zA-Z]+|\(|\))", query.lower())
     for token in list_token:
         if token not in precedence:
             postfix.push(token)
