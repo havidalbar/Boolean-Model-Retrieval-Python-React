@@ -36,7 +36,8 @@ def search(request: web.Request):
         page_size_limit: int = int(request.query.get('limit', 10))
 
         postfix_query: List[int] = infix_to_postfix(query)
-        evaluator_result: Set[int] = postfix_evaluator(postfix_query, boolean_model)
+        evaluator_result: Set[int] = postfix_evaluator(
+            postfix_query, boolean_model)
 
         result_docs: List[Dict[str, str]] = [doc.asdict(output_keys=['slug', 'title', 'img', 'summary'])
                                              for doc in boolean_model.get_documents(evaluator_result)]

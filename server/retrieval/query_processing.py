@@ -38,7 +38,8 @@ def postfix_evaluator(query: List[str], boolean_model: BooleanModel) -> Set[int]
             if token_in_query == 'not':
                 temp_result.push(boolean_model.not_operator(temp_result.pop()))
             elif token_in_query == 'and':
-                temp_result.push(temp_result.pop().intersection(temp_result.pop()))
+                temp_result.push(
+                    temp_result.pop().intersection(temp_result.pop()))
             else:
                 temp_result.push(temp_result.pop().union(temp_result.pop()))
         else:

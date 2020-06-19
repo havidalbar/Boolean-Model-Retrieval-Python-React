@@ -18,7 +18,8 @@ if __name__ == '__main__':
             data_filename = sys.argv[arg_index + 1]
             break
 
-    rescrape: bool = not os.path.isfile(data_filename) or '--force-scrape' in sys.argv
+    rescrape: bool = not os.path.isfile(
+        data_filename) or '--force-scrape' in sys.argv
 
     if rescrape:
         start_spider(debug='--debug' in sys.argv, write_path=data_filename)
@@ -35,6 +36,7 @@ if __name__ == '__main__':
     query: List[int] = infix_to_postfix('gatal and (merah or perih)')
     evaluator_result: Set[int] = postfix_evaluator(query, boolean_model)
     print(evaluator_result)
-    result_docs: List[DataModel] = boolean_model.get_documents(evaluator_result)
+    result_docs: List[DataModel] = boolean_model.get_documents(
+        evaluator_result)
     for doc in result_docs:
         print(doc.get_title())

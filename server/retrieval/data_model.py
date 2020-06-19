@@ -9,7 +9,8 @@ class DataModel:
         self.__title: str = title
         self.__img: str = img
         self.__content: str = content
-        self.__cleaned: str = Preprocessing.cleaning(Preprocessing.case_folding(title + ' ' + content))
+        self.__cleaned: str = Preprocessing.cleaning(
+            Preprocessing.case_folding(title + ' ' + content))
         self.__tokens: List[str] = Preprocessing.tokenizing(self.__cleaned)
 
     def get_slug(self) -> str:

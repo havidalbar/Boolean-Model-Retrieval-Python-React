@@ -8,7 +8,8 @@ from typing import Dict, List, Iterable, Set
 
 class BooleanModel:
     def __init__(self, docs_string: str, save_pickle: bool = True, pickle_filename: str = 'boolean_model.pickle'):
-        self.__docs: np.ndarray = np.asarray(self.extract_documents(docs_string))
+        self.__docs: np.ndarray = np.asarray(
+            self.extract_documents(docs_string))
         self.__universal_set: Set[int] = set(range(len(self.__docs)))
         self.indexing()
         boolean_model_file = open(pickle_filename, 'wb')
